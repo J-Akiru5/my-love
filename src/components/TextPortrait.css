@@ -1,0 +1,136 @@
+.portrait-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    overflow: hidden;
+}
+
+.text-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: black;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    font-weight: normal;
+    line-height: 0.7;
+    letter-spacing: -1px;
+    word-wrap: break-word;
+    overflow: hidden;
+    z-index: 1;
+    user-select: none;
+    text-align: justify;
+    padding: 0;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.image-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+.image-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+    filter: grayscale(80%) contrast(175%) brightness(110%);
+}
+
+.watermark {
+    position: absolute;
+    z-index: 10;
+    font-family: 'Dancing Script', cursive;
+    font-size: 5rem;
+    color: white;
+    bottom: 10%;
+    left: 5%;
+    right: auto;
+    transform: rotate(-10deg);
+    filter: blur(0.5px);
+    opacity: 0.5;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .text-layer {
+         font-size: 11px;
+         line-height: 0.6;
+    }
+    .image-layer img {
+        object-position: center 20%;
+    }
+    .watermark {
+        font-size: 3rem;
+        bottom: 15%; 
+        left: 5%;
+        text-align: left;
+    }
+}
+
+/* Interactive Word Styling - Golden Glow */
+.interactive-word {
+    cursor: pointer; /* Changed from help to pointer for mobile clarity */
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 215, 0, 0.3); /* Gold tint */
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 50; /* Ensure it sits above non-interactive text */
+}
+
+/* Hover & Active State (Mobile) */
+.interactive-word:hover,
+.interactive-word:active, 
+.interactive-word.active-glow {
+    color: #FFD700; /* Gold */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 69, 0, 0.5); /* Glowing effect */
+    font-weight: bold;
+    z-index: 100;
+}
+/* Video Overlay Styling */
+.video-overlay {
+    position: absolute;
+    bottom: 20px; /* Lower right corner */
+    right: 20px;
+    width: 250px; /* Default size */
+    z-index: 50; /* Above images, below modals */
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.video-overlay video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+}
+
+/* Mobile Adjustments for Video */
+@media (max-width: 768px) {
+    .video-overlay {
+        width: 150px;
+        bottom: 100px; /* Move up slightly to avoid watermark overlap if needed */
+        right: 15px;
+    }
+}

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+}
+
+/* Custom Utilities */
+.mix-blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+/* Detailed Animated Gradient Background */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-mesh {
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #4a148c, #3b8d99);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* Pulsing Glass Glow Animation */
+@keyframes glassGlow {
+    0% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.3), inset 0 0 0px rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+    50% { box-shadow: 0 0 40px rgba(186, 85, 211, 0.6), inset 0 0 20px rgba(255, 182, 193, 0.2); border-color: rgba(255, 105, 180, 0.6); }
+    100% { box-shadow: 0 0 20px rgba(255, 105, 180, 0.3), inset 0 0 0px rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+}
+
+.glass-card-glow {
+    animation: glassGlow 3s infinite ease-in-out;
+}

@@ -1,0 +1,79 @@
+# Valentine App — Romantic Overhaul
+
+Enhance the Valentine's experience with a modern glassmorphic landing page, continuous music, a romantic sparkle transition replacing the glitch effect, and a video overlay during the text portrait.
+
+## Proposed Changes
+
+### Landing Page — HeartbeatStart
+
+#### [MODIFY] [HeartbeatStart.jsx](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/components/HeartbeatStart.jsx)
+
+- **Background**: Replace `bg-gradient-to-br from-sky-300 to-indigo-300` with a new animated blue-violet mesh gradient using CSS `@keyframes` for a slow shift effect.
+- **Remove subtitle**: Delete the `<p>Dec 2, 2024 - Forever</p>` line.
+- **Glassmorphic card**: Enhance the card with a pulsing/glowing border animation — a subtle glow that cycles through pink/violet tones using `box-shadow` animation.
+- **Background particles**: Re-skin from plain white blurs to a mix of soft pink/violet/blue to match the new palette.
+
+---
+
+### Music Continuity
+
+#### [MODIFY] [App.jsx](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/App.jsx)
+
+- **Remove** `audioRef.current.pause()` and `audioRef.current.currentTime = 0` from [handleMemoriesComplete](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/App.jsx#26-33).
+- Music will continue playing through glitch replacement → ripple → portrait stages.
+- It will naturally end when the song finishes (no forced stop).
+- During the portrait stage, add `audioRef.current.volume = 0.15` to lower it while the video plays.
+- Pass `audioRef` down to [TextPortrait](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/components/TextPortrait.jsx#10-165) so it can adjust volume.
+
+---
+
+### Replace Glitch with Sparkle Transition
+
+#### [MODIFY] [GlitchOverlay.jsx](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/components/GlitchOverlay.jsx)
+
+Complete rewrite — rename conceptually to a **Sparkle/Heart Particle Transition**:
+- Remove all glitch noise audio (AudioContext code).
+- Replace "ERROR" text and glitch bars with:
+  - 30-50 animated heart/sparkle particles that float and scatter from center.
+  - A central pulsing text: "💖" with a warm pink glow effect.
+  - Soft radial gradient background (dark → pink bloom in center).
+- Keep the 2-second duration and `onComplete` callback timing.
+
+---
+
+### Video Overlay in Text Portrait
+
+#### [MODIFY] [TextPortrait.jsx](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/components/TextPortrait.jsx)
+
+- Import the video file: `Messenger_creation_C5B5C144-5391-42D5-A29E-E31980D929EB.mp4`.
+- Add a `<video>` element positioned in the **lower-right corner**:
+  - Size: ~200×150px (responsive, smaller on mobile)
+  - Autoplay, loop, muted by default initially
+  - Rounded corners, subtle white/pink border, glassmorphic backdrop
+  - z-index above the portrait layers but below modals
+- Accept `audioRef` as prop to lower music volume when mounted.
+
+#### [MODIFY] [TextPortrait.css](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/components/TextPortrait.css)
+
+- Add `.video-overlay` class for the lower-right video container styling.
+
+---
+
+### Global Styles
+
+#### [MODIFY] [index.css](file:///c:/dev/Flask/text-portrait-demo/text-portrait-react/src/index.css)
+
+- Add `@keyframes gradientShift` for the animated landing page background.
+- Add `.glass-glow` animation for the pulsing border effect.
+
+## Verification Plan
+
+### Manual Verification
+1. Run `npm run dev` in `c:\dev\Flask\text-portrait-demo\text-portrait-react`
+2. Open browser at the dev server URL
+3. **Landing page**: Confirm blue-violet animated gradient, glassmorphic card with pulsing glow, no "Dec 2, 2024" text visible
+4. Click YES → enter password phase → enter "December 2, 2024"
+5. **Music**: Confirm music starts and does NOT stop when memories finish
+6. **Transition**: Confirm sparkle/hearts appear instead of glitch error — no noise/static audio
+7. **Text Portrait**: Confirm video appears in lower-right corner, loops, and music volume is lowered
+8. Confirm video has rounded corners and subtle border styling

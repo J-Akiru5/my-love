@@ -5,9 +5,25 @@ const HeartbeatStart = ({ onStart }) => {
   const [showInput, setShowInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState(false);
+  const [noButtonPosition, setNoButtonPosition] = useState({ x: 0, y: 0 });
+  const [noButtonClicks, setNoButtonClicks] = useState(0);
 
   const handleYesClick = () => {
     setShowInput(true);
+  };
+
+  const handleNoClick = (e) => {
+    e.stopPropagation();
+    setNoButtonClicks(prev => prev + 1);
+    
+    // Generate random position within viewport bounds
+    const maxX = window.innerWidth > 768 ? 300 : 150;
+    const maxY = window.innerWidth > 768 ? 200 : 100;
+    
+    setNoButtonPosition({
+      x: (Math.random() - 0.5) * maxX,
+      y: (Math.random() - 0.5) * maxY
+    });
   };
 
   const handleUnlock = (e) => {
@@ -89,11 +105,19 @@ const HeartbeatStart = ({ onStart }) => {
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full" />
                     </motion.button>
 
-                    {/* The Vanishing Button */}
+                    {/* The Chasing NO Button */}
                     <motion.button
-                        initial={{ opacity: 1 }}
-                        whileHover={{ opacity: 0, scale: 0.8 }}
-                        className="bg-white/10 backdrop-blur-md text-gray-300 px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-lg md:text-xl border border-white/10"
+                        animate={{ 
+                            x: noButtonPosition.x, 
+                            y: noButtonPosition.y,
+                            scale: Math.max(0.3, 1 - noButtonClicks * 0.1)
+                        }}
+                        transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                        onMouseEnter={handleNoClick}
+                        onClick={handleNoClick}
+                        onTouchStart={handleNoClick}
+                        className="bg-white/10 backdrop-blur-md text-gray-300 px-6 py-3 md:px-8 md:py-4 rounded-full font-bold text-lg md:text-xl border border-white/10 touch-none select-none"
+                        style={{ willChange: 'transform' }}
                     >
                         NO 💔
                     </motion.button>

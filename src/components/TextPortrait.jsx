@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import portraitImage from '../assets/Gwapa.jpg';
-import videoSource from '../assets/video/Messenger_creation_C5B5C144-5391-42D5-A29E-E31980D929EB.mp4';
 import './TextPortrait.css';
+
+// Google Drive video embed link
+const VIDEO_URL = "https://drive.google.com/file/d/11enSLDu3zFSj-_1kxvaKESrnUr1x_kbM/preview";
 
 // Import Specific High Quality Images for "Hidden Words"
 const hqImagesModules = import.meta.glob('../assets/images/*A7K*.{jpg,jpeg,png,JPG}', { eager: true });
@@ -10,9 +12,9 @@ const hqImages = Object.values(hqImagesModules).map(mod => mod.default);
 
 const TextPortrait = ({ audioRef }) => {
     const [hearts, setHearts] = useState([]);
-    const [activeImage, setActiveImage] = useState(null); // Changed from 'hovered' to 'active' for click support
+    const [activeImage, setActiveImage] = useState(null);
     const [textContent, setTextContent] = useState({ part1: [], loopText: "" });
-    const videoRef = useRef(null);
+    const [videoPlaying, setVideoPlaying] = useState(false);
 
     // Lower music volume when this component mounts
     useEffect(() => {
@@ -29,27 +31,6 @@ const TextPortrait = ({ audioRef }) => {
             return () => clearInterval(fadeAudio);
         }
     }, [audioRef]);
-
-    // Ensure video autoplays reliably
-    useEffect(() => {
-        const video = videoRef.current;
-        if (video) {
-            video.muted = true;
-            video.playsInline = true;
-            
-            // Try to play immediately
-            const playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(e => {
-                    console.log('Initial autoplay blocked, trying after load:', e);
-                    // If blocked, retry when video can play
-                    video.addEventListener('canplay', () => {
-                        video.play().catch(err => console.log('Video play failed:', err));
-                    }, { once: true });
-                });
-            }
-        }
-    }, []);
 
     // Interactive Words Configuration - Mapped to all HQ Images
     const interactiveKeywords = {
@@ -151,22 +132,40 @@ const TextPortrait = ({ audioRef }) => {
                 <span className="text-5xl text-red-600 block ml-14 -mt-2 drop-shadow-md font-bold" style={{ opacity: 1 }}>My Love</span>
             </div>
 
-            {/* Video Overlay - Lower Right */}
+            {/* Video Overlay - Lower Right with Play Button */}
             <motion.div 
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 2, duration: 1 }}
                 className="video-overlay"
             >
-                <video 
-                    ref={videoRef}
-                    src={videoSource} 
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline 
-                    className="rounded-lg shadow-[0_0_20px_rgba(255,105,180,0.5)] border-2 border-white/30"
-                />
+                {!videoPlaying && (
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setVideoPlaying(true)}
+                        className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-lg cursor-pointer group"
+                    >
+                        <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white flex items-center justify-center shadow-lg">
+                            <svg className="w-8 h-8 text-pink-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </motion.button>
+                )}
+                
+                {videoPlaying ? (
+                    <iframe 
+                        src={VIDEO_URL}
+                        className="w-full h-full rounded-lg"
+                        allow="autoplay"
+                        allowFullScreen
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-pink-200 to-purple-300 rounded-lg flex items-center justify-center">
+                        <span className="text-4xl">🎥</span>
+                    </div>
+                )}
             </motion.div>
 
             {/* Hidden Word Reveal Popup (Modal) */}

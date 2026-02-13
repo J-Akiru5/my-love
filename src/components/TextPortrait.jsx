@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import portraitImage from '../assets/Gwapa.jpg';
-import videoSource from '../assets/video/Messenger_creation_C5B5C144-5391-42D5-A29E-E31980D929EB.mp4';
-import videoAudioSource from '../assets/audio/0213.MP3';
+import portraitAudioSource from '../assets/audio/0213.MP3';
 import './TextPortrait.css';
 
 // Import Specific High Quality Images for "Hidden Words"
@@ -13,10 +12,7 @@ const TextPortrait = ({ audioRef }) => {
     const [hearts, setHearts] = useState([]);
     const [activeImage, setActiveImage] = useState(null);
     const [textContent, setTextContent] = useState({ part1: [], loopText: "" });
-    const [isVideoExpanded, setIsVideoExpanded] = useState(false);
-    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-    const videoRef = useRef(null);
-    const videoAudioRef = useRef(null);
+    const portraitAudioRef = useRef(null);
 
     // Lower music volume when this component mounts
     useEffect(() => {
@@ -34,47 +30,23 @@ const TextPortrait = ({ audioRef }) => {
         }
     }, [audioRef]);
 
-    // Autoplay video with audio on mount
+    // Autoplay portrait audio once on mount
     useEffect(() => {
-        const playVideo = async () => {
-            if (videoRef.current && videoAudioRef.current) {
+        const playAudio = async () => {
+            if (portraitAudioRef.current) {
                 try {
-                    // Sync audio with video
-                    videoAudioRef.current.volume = 0.8;
-                    
-                    // Start both at same time
-                    await Promise.all([
-                        videoRef.current.play(),
-                        videoAudioRef.current.play()
-                    ]);
-                    
-                    setIsVideoPlaying(true);
+                    portraitAudioRef.current.volume = 0.8;
+                    await portraitAudioRef.current.play();
                 } catch (error) {
                     console.log('Autoplay prevented:', error);
-                    // Autoplay blocked, user will need to click play
                 }
             }
         };
 
         // Delay to ensure smooth transition
-        const timer = setTimeout(playVideo, 2500);
+        const timer = setTimeout(playAudio, 2500);
         return () => clearTimeout(timer);
     }, []);
-
-    // Sync video and audio playback
-    const handleVideoPlayPause = () => {
-        if (videoRef.current && videoAudioRef.current) {
-            if (isVideoPlaying) {
-                videoRef.current.pause();
-                videoAudioRef.current.pause();
-                setIsVideoPlaying(false);
-            } else {
-                videoRef.current.play();
-                videoAudioRef.current.play();
-                setIsVideoPlaying(true);
-            }
-        }
-    };
 
     // Interactive Words Configuration - Mapped to all HQ Images
     const interactiveKeywords = {
@@ -176,100 +148,11 @@ const TextPortrait = ({ audioRef }) => {
                 <span className="text-5xl text-red-600 block ml-14 -mt-2 drop-shadow-md font-bold" style={{ opacity: 1 }}>My Love</span>
             </div>
 
-            {/* Video Overlay - Lower Right with Synced Audio */}
-            <AnimatePresence>
-                {isVideoExpanded && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[9998] bg-black/90 backdrop-blur-sm flex items-center justify-center"
-                        onClick={() => setIsVideoExpanded(false)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.8 }}
-                            className="relative w-[90vw] h-[90vh] md:w-[80vw] md:h-[80vh]"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <video
-                                src={videoSource}
-                                className="w-full h-full object-contain rounded-lg"
-                                controls
-                                autoPlay
-                                loop
-                                muted
-                            />
-                            <button
-                                onClick={() => setIsVideoExpanded(false)}
-                                className="absolute -top-10 right-0 text-white text-2xl hover:text-pink-400 transition-colors"
-                            >
-                                ✕ Close
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Hidden audio element synced with video */}
+            {/* Audio element - plays once */}
             <audio
-                ref={videoAudioRef}
-                src={videoAudioSource}
-                loop
+                ref={portraitAudioRef}
+                src={portraitAudioSource}
             />
-
-            <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2, duration: 1 }}
-                className="video-overlay group"
-            >
-                {/* HTML5 Video with controls */}
-                <video
-                    ref={videoRef}
-                    src={videoSource}
-                    className="w-full h-full object-cover rounded-lg"
-                    loop
-                    muted
-                    playsInline
-                    onClick={handleVideoPlayPause}
-                />
-                
-                {/* Play/Pause overlay */}
-                {!isVideoPlaying && (
-                    <motion.button
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        onClick={handleVideoPlayPause}
-                        className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-lg cursor-pointer z-10"
-                    >
-                        <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                            <svg className="w-8 h-8 text-pink-500 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                        </div>
-                    </motion.button>
-                )}
-                
-                {/* Expand button */}
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsVideoExpanded(true)}
-                    className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-md text-xs backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1 z-20"
-                >
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"/>
-                    </svg>
-                    <span className="hidden md:inline">Expand</span>
-                </motion.button>
-
-                {/* Mobile hint */}
-                <div className="md:hidden absolute top-2 left-2 bg-pink-500/80 text-white text-[10px] px-2 py-1 rounded-md pointer-events-none opacity-70">
-                    Tap to {isVideoPlaying ? 'pause' : 'play'}
-                </div>
-            </motion.div>
 
             {/* Hidden Word Reveal Popup (Modal) */}
             <AnimatePresence>

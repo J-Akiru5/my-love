@@ -12,12 +12,22 @@ import nightChangesAudio from './assets/audio/night-changes.mp3';
 function App() {
   const [stage, setStage] = useState('start'); // 'start' | 'memories' | 'glitch' | 'flash' | 'portrait'
   const audioRef = useRef(new Audio(nightChangesAudio));
+  const loopCountRef = useRef(0);
   
   // Handle start (After Password Unlock)
   const handleStart = () => {
-    // Attempt to play audio with looping enabled
-    audioRef.current.loop = true;
+    // Play audio with loop tracking
     audioRef.current.volume = 0.5;
+    
+    // Track loops and stop after 5
+    audioRef.current.addEventListener('ended', () => {
+      loopCountRef.current += 1;
+      if (loopCountRef.current < 5) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+      }
+    });
+    
     audioRef.current.play().catch(e => console.log("Audio play failed:", e));
     
     setStage('memories');

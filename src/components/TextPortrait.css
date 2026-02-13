@@ -25,6 +25,7 @@
     word-wrap: break-word;
     overflow: hidden;
     z-index: 1;
+    -webkit-user-select: none;
     user-select: none;
     text-align: justify;
     padding: 0;

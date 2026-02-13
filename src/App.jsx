@@ -15,8 +15,8 @@ function App() {
   
   // Handle start (After Password Unlock)
   const handleStart = () => {
-    // Attempt to play audio
-    audioRef.current.loop = false;
+    // Attempt to play audio with looping enabled
+    audioRef.current.loop = true;
     audioRef.current.volume = 0.5;
     audioRef.current.play().catch(e => console.log("Audio play failed:", e));
     

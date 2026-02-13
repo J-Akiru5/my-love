@@ -36,7 +36,18 @@ const TextPortrait = ({ audioRef }) => {
         if (video) {
             video.muted = true;
             video.playsInline = true;
-            video.play().catch(e => console.log('Video autoplay failed:', e));
+            
+            // Try to play immediately
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    console.log('Initial autoplay blocked, trying after load:', e);
+                    // If blocked, retry when video can play
+                    video.addEventListener('canplay', () => {
+                        video.play().catch(err => console.log('Video play failed:', err));
+                    }, { once: true });
+                });
+            }
         }
     }, []);
 
